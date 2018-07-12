@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import TimeTable from './TimeTable'
 import FoodList from './FoodList'
 
 class App extends Component {
@@ -13,9 +14,21 @@ class App extends Component {
   subscribe = () =>
     this.props.db.ref().on('value', snap => this.setState(snap.val() || {}))
 
+  renderMain = ({ table, food, activity }) => {
+    const isValid = table && food && activity
+    return (
+      isValid && (
+        <main style={{ padding: 20 }}>
+          <TimeTable table={table} food={food} activity={activity} />
+          <FoodList food={sort(food)} />
+        </main>
+      )
+    )
+  }
+
   render() {
-    const { idle, food } = this.state
-    return (!idle && food && <FoodList food={sort(food)} />) || null
+    const { idle } = this.state
+    return (!idle && this.renderMain(this.state)) || null
   }
 }
 

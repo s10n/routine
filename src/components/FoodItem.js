@@ -21,15 +21,11 @@ const defaultProps = {
 
 const FoodItem = ({ name, categories, nutrition }) => (
   <article>
-    <header>
-      <h1>
-        {name}
-        <small>{categories}</small>
-      </h1>
-    </header>
-    <main>
-      <p>{JSON.stringify(nutrition)}</p>
-    </main>
+    <h1 style={{ display: 'inline', fontSize: 'inherit' }}>
+      {name}
+      <small>{categories}</small>
+    </h1>
+    <p style={{ display: 'inline' }}>{JSON.stringify(nutrition)}</p>
   </article>
 )
 
