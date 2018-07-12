@@ -1,7 +1,12 @@
 import { uniq } from 'ramda'
 
 export const facts = ['calories', 'protein', 'carbohydrate', 'fat']
-const units = { calories: 'kcal', protein: 'g', carbohydrate: 'g', fat: 'g' }
+export const units = {
+  calories: 'kcal',
+  protein: 'g',
+  carbohydrate: 'g',
+  fat: 'g'
+}
 
 const normalize = param =>
   typeof param === 'number' ? !!param && Math.round(param) : param
@@ -27,11 +32,24 @@ export const sumNutrition = array => {
   return array.reduce(fn, {})
 }
 
-export const getBlock = db => ([key, value]) => {
+export const getTotalNutritionWith = db => table =>
+  sumNutrition(
+    Object.entries(table).reduce(
+      (acc, [time, value]) => [
+        ...acc,
+        ...Object.entries(value).map(
+          entry => getBlockWith(db)(entry)['nutrition']
+        )
+      ],
+      []
+    )
+  )
+
+export const getBlockWith = db => ([key, value]) => {
   const getInfo = key => db[key] || {}
   const { name, categories, nutrition = {} } = getInfo(key)
   const { size, with: w } = value
-  const side = (w && mapEntries(w, getBlock(db))) || []
+  const side = (w && mapEntries(w, getBlockWith(db))) || []
   const getMapSide = key => side.map(o => o[key])
 
   return {

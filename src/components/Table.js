@@ -9,7 +9,7 @@ const propTypes = {
 const defaultProps = {}
 
 const Table = ({ headings, rows }) => (
-  <table>
+  <table style={{ width: '100%' }}>
     <thead>
       <tr>
         {headings.map((heading, index) => (
