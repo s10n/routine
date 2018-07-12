@@ -1,7 +1,11 @@
 import React from 'react'
-import {} from 'prop-types'
+import { string, arrayOf, object, shape, func } from 'prop-types'
 
-const propTypes = {}
+const propTypes = {
+  headings: arrayOf(string),
+  rows: arrayOf(shape({ data: arrayOf(string), style: object, onClick: func }))
+}
+
 const defaultProps = {}
 
 const Table = ({ headings, rows }) => (
@@ -18,8 +22,16 @@ const Table = ({ headings, rows }) => (
 
     <tbody>
       {rows.map((row, index) => (
-        <tr key={index}>
-          {row.map((cell, index) => (
+        <tr
+          style={Object.assign(
+            {},
+            row.style,
+            row.onClick && style.tr.clickable
+          )}
+          onClick={row.onClick}
+          key={index}
+        >
+          {row.data.map((cell, index) => (
             <td style={style.td} key={index}>
               {cell}
             </td>
@@ -39,6 +51,7 @@ const common = {
   textAlign: 'center'
 }
 const style = {
+  tr: { clickable: { cursor: 'pointer', userSelect: 'none' } },
   th: { ...common },
   td: { ...common }
 }

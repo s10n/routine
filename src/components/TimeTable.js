@@ -1,31 +1,66 @@
-import React from 'react'
-import { object } from 'prop-types'
+import React, { Fragment } from 'react'
+import { object, func, instanceOf } from 'prop-types'
 import { cond, equals } from 'ramda'
 import { facts, getBlock, getNutritionString, translate } from '../utils'
 import Table from './Table'
 
-const propTypes = { table: object, food: object, activity: object }
-const defaultProps = { table: {}, food: {}, activity: {} }
+const propTypes = {
+  table: object,
+  done: object,
+  food: object,
+  activity: object,
+  current: instanceOf(Date),
+  onIntake: func,
+  onReset: func
+}
 
-const TimeTable = ({ table, food, activity }) => {
+const defaultProps = {
+  table: {},
+  done: {},
+  food: {},
+  activity: {},
+  current: new Date(),
+  onIntake: () => {},
+  onReset: () => {}
+}
+
+const TimeTable = ({ table, done, food, activity, current, ...rest }) => {
+  const { onIntake, onReset } = rest
   const db = { ...food, ...activity }
-  const sorted = Object.keys(table)
-    .map(Number)
-    .sort((a, b) => a - b)
+  const sorted = sortByNumber(Object.keys(table).map(Number))
+  const currentHours = current.getHours()
 
-  const _table = sorted.reduce(
-    (acc, time) => [
-      ...acc,
-      ...Object.entries(table[time]).map((entry, index) =>
-        columns.map(
+  const reduceRows = (acc, time) => {
+    const getRow = (entry, index) => {
+      const [key] = entry
+      const isDone = done[time] && done[time].includes(key)
+      const isPast = time < currentHours
+      const isNow = time === currentHours
+
+      return {
+        data: columns.map(
           getContent(Object.assign({}, getBlock(db)(entry), !index && { time }))
-        )
-      )
-    ],
-    []
-  )
+        ),
+        style: {
+          color: isDone ? 'silver' : isPast && 'brown',
+          fontWeight: isNow && 'bold'
+        },
+        onClick: () => onIntake(time, key)
+      }
+    }
 
-  return <Table headings={translate(columns)} rows={_table} />
+    return [...acc, ...Object.entries(table[time]).map(getRow)]
+  }
+
+  return (
+    <Fragment>
+      <button onClick={onReset}>reset</button>
+      <Table
+        headings={translate(columns)}
+        rows={sorted.reduce(reduceRows, [])}
+      />
+    </Fragment>
+  )
 }
 
 TimeTable.propTypes = propTypes
@@ -50,6 +85,7 @@ export default TimeTable
 
 /* utils */
 const isIn = array => item => array.includes(item)
+const sortByNumber = array => array.sort((a, b) => a - b)
 const getTimeString = time =>
   time &&
   (time < 12 ? 'AM' : 'PM') + ' ' + (time > 12 ? time - 12 : time) + ':00'
