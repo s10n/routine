@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "routine-production",
+    "dev": "routine-dev"
+  }
+}
