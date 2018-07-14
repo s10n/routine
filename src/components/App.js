@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import { without, omit } from 'ramda'
 import TimeTable from './TimeTable'
 import FoodList from './FoodList'
+import Signin from './Signin'
 
 class App extends Component {
   InitialData = { food: {}, table: {}, done: {}, weekly: {} }
-  state = { idle: true, ...this.InitialData }
+  state = { idle: true, user: null, ...this.InitialData }
 
   componentDidMount() {
     this.props.auth.onAuthStateChanged(user =>
@@ -17,6 +18,14 @@ class App extends Component {
     this.props.db.ref().on('value', snap => this.setState(snap.val() || {}))
   }
 
+  /* Authentication */
+  signin = ({ email, password }) => {
+    this.props.auth
+      .signInWithEmailAndPassword(email, password)
+      .catch(error => alert(error.message))
+  }
+
+  /* Database */
   intake = (time, key) => {
     const { done } = this.state
     const list = done[time] || []
@@ -30,6 +39,7 @@ class App extends Component {
     this.props.db.ref('done').set(updates)
   }
 
+  /* render */
   renderMain = () => {
     const validate = object => !!Object.keys(object).length
     const { table, food } = this.state
@@ -43,8 +53,11 @@ class App extends Component {
   }
 
   render() {
-    const { idle } = this.state
-    return (!idle && this.renderMain()) || null
+    const { idle, user } = this.state
+    return (
+      (!idle && user ? this.renderMain() : <Signin onSubmit={this.signin} />) ||
+      null
+    )
   }
 }
 
