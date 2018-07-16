@@ -55,11 +55,15 @@ class App extends Component {
   render() {
     const { idle, user } = this.state
     return idle ? null : user ? (
-      <main style={{ padding: 20 }}>{this.renderMain()}</main>
+      <main style={style.main}>{this.renderMain()}</main>
     ) : (
       <Signin onSubmit={this.signin} />
     )
   }
+}
+
+const style = {
+  main: { padding: 20, minWidth: 992, maxWidth: 1200 }
 }
 
 export default App
