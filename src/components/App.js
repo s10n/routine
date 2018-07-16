@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { without, omit } from 'ramda'
 import TimeTable from './TimeTable'
 import FoodList from './FoodList'
@@ -45,18 +45,19 @@ class App extends Component {
     const { table, food } = this.state
     const props = { ...this.state, onIntake: this.intake, onReset: this.reset }
     return (
-      <main style={{ padding: 20 }}>
+      <Fragment>
         {validate(table) && <TimeTable {...props} />}
         {validate(food) && <FoodList food={sort(food)} />}
-      </main>
+      </Fragment>
     )
   }
 
   render() {
     const { idle, user } = this.state
-    return (
-      (!idle && user ? this.renderMain() : <Signin onSubmit={this.signin} />) ||
-      null
+    return idle ? null : user ? (
+      <main style={{ padding: 20 }}>{this.renderMain()}</main>
+    ) : (
+      <Signin onSubmit={this.signin} />
     )
   }
 }
