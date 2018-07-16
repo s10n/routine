@@ -11,7 +11,9 @@ const Signin = ({ onSubmit }) => (
       <form onSubmit={handleSubmit}>
         <Field {...field.email} />
         <Field {...field.password} />
-        <button type="submit" disabled={pristine || invalid} hidden />
+        <button type="submit" disabled={pristine || invalid}>
+          →
+        </button>
       </form>
     )}
   </Form>
