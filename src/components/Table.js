@@ -1,12 +1,23 @@
 import React from 'react'
-import { string, arrayOf, object, shape, func } from 'prop-types'
+import { string, arrayOf, object, shape, func, oneOfType } from 'prop-types'
+import { cond, equals, always } from 'ramda'
+import Cell from './Cell'
 
 const propTypes = {
   headings: arrayOf(string),
-  rows: arrayOf(shape({ data: arrayOf(string), style: object, onClick: func }))
+  rows: arrayOf(
+    shape({
+      data: arrayOf(oneOfType([string, object])),
+      style: object,
+      onClick: func
+    })
+  )
 }
 
-const defaultProps = {}
+const defaultProps = {
+  headings: [],
+  rows: []
+}
 
 const Table = ({ headings, rows }) => (
   <table style={{ width: '100%' }}>
@@ -33,7 +44,10 @@ const Table = ({ headings, rows }) => (
         >
           {row.data.map((cell, index) => (
             <td style={style.td} key={index}>
-              {cell}
+              {cond([
+                [equals('string'), always(cell)],
+                [equals('object'), always(<Cell {...cell} />)]
+              ])(typeof cell)}
             </td>
           ))}
         </tr>

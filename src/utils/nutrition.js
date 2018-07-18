@@ -8,12 +8,25 @@ export const units = {
   fat: 'g'
 }
 
+const unitBlocks = {
+  protein: 7,
+  carbohydrate: 9,
+  fat: 3
+}
+
 const normalize = param =>
   typeof param === 'number' ? !!param && Math.round(param) : param
 
 export const getNutritionString = (value, column) => {
   const unit = units[column]
-  return value ? normalize(value) + unit : ''
+  const unitBlock = unitBlocks[column]
+  const round = number => Math.round(number * 10) / 10
+  return value
+    ? Object.assign(
+        { amount: normalize(value) + unit },
+        unitBlock && { block: round(value / unitBlock) }
+      )
+    : ''
 }
 
 export const calcNutrition = (nutrition, size) => {
