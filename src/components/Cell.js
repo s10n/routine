@@ -1,13 +1,13 @@
 import React from 'react'
-import { string, number } from 'prop-types'
+import { object, node } from 'prop-types'
 
-const propTypes = { amount: string, block: number }
-const defaultProps = { amount: '', block: NaN }
+const propTypes = { sub: node, style: object }
+const defaultProps = { sub: '', style: {} }
 
-const Cell = ({ amount, block }) => (
-  <div style={style}>
-    {amount && <span style={style.amount}>{amount}</span>}
-    {!!block && <small style={style.block}>{block}</small>}
+const Cell = ({ sub, style: variant, children }) => (
+  <div style={{ ...style, ...variant }}>
+    {children}
+    {!!sub && <small style={style.sub}>{sub}</small>}
   </div>
 )
 
@@ -16,9 +16,10 @@ Cell.defaultProps = defaultProps
 
 const style = {
   display: 'flex',
-  alignItems: 'flex-end',
-  amount: { flex: 1 },
-  block: { flex: 'none', fontFamily: 'monospace', fontWeight: 'normal' }
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: 5,
+  sub: { fontFamily: 'monospace', marginTop: '.25rem' }
 }
 
 export default Cell

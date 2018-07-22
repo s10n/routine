@@ -19,15 +19,16 @@ const defaultProps = {
   nutrition: undefined
 }
 
-const FoodItem = ({ name, categories, nutrition }) => (
-  <article>
-    <h1 style={{ display: 'inline', fontSize: 'inherit' }}>
-      {name}
-      <small>{categories}</small>
-    </h1>
-    <p style={{ display: 'inline' }}>{JSON.stringify(nutrition)}</p>
-  </article>
-)
+const FoodItem = ({ name, categories, nutrition }) =>
+  null && (
+    <article>
+      <h1 style={{ display: 'inline', fontSize: 'inherit' }}>
+        {name}
+        <small>{categories}</small>
+      </h1>
+      <p style={{ display: 'inline' }}>{JSON.stringify(nutrition)}</p>
+    </article>
+  )
 
 FoodItem.propTypes = propTypes
 FoodItem.defaultProps = defaultProps

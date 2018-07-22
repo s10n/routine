@@ -1,11 +1,12 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component, createContext } from 'react'
 import { without, omit } from 'ramda'
 import TimeTable from './TimeTable'
 import FoodList from './FoodList'
 import Signin from './Signin'
 
+export const { Provider, Consumer } = createContext()
 class App extends Component {
-  InitialData = { food: {}, table: {}, done: {}, weekly: {} }
+  InitialData = { food: {}, activity: {}, table: {}, done: {}, weekly: {} }
   state = { idle: true, user: null, ...this.InitialData }
 
   componentDidMount() {
@@ -26,7 +27,7 @@ class App extends Component {
   }
 
   /* Database */
-  intake = (time, key) => {
+  take = (time, key) => {
     const { done } = this.state
     const list = done[time] || []
     const updates = list.includes(key) ? without([key], list) : [...list, key]
@@ -42,13 +43,14 @@ class App extends Component {
   /* render */
   renderMain = () => {
     const validate = object => !!Object.keys(object).length
-    const { table, food } = this.state
-    const props = { ...this.state, onIntake: this.intake, onReset: this.reset }
+    const { food, activity, table, done } = this.state
+    const props = { table, db: { ...food, ...activity }, onReset: this.reset }
+
     return (
-      <Fragment>
+      <Provider value={{ done, onTake: this.take }}>
         {validate(table) && <TimeTable {...props} />}
         {validate(food) && <FoodList food={sort(food)} />}
-      </Fragment>
+      </Provider>
     )
   }
 
@@ -63,7 +65,7 @@ class App extends Component {
 }
 
 const style = {
-  main: { padding: 20, minWidth: 992, maxWidth: 1200 }
+  main: { padding: 20 }
 }
 
 export default App
