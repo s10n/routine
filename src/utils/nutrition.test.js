@@ -1,18 +1,12 @@
 import { calcNutrition, sumNutrition, getTotalNutritionWith } from './nutrition'
-import { getBlockWith } from './nutrition'
 
 const table = {
-  '9': {
-    '67b13718-fd01-49b3-9e84-8b83a92a2d57': {
-      size: 100,
-      with: { 'e48eeb06-4b1d-4adc-9f12-1be304f85a89': { size: 200 } }
-    }
-  },
-  '10': { '5140860a-eeb4-438d-83c0-8be304f52c77': { size: 1 } }
+  '9': { name: '아침식사', list: { granola: 100, soymilk: 200 } },
+  '11': { name: '간식', list: { apple: 1 } }
 }
 
 const food = {
-  '67b13718-fd01-49b3-9e84-8b83a92a2d57': {
+  granola: {
     categories: ['nuts', 'fruit', 'starch'],
     name: '그래놀라',
     nutrition: {
@@ -24,7 +18,7 @@ const food = {
       fat: 13
     }
   },
-  'e48eeb06-4b1d-4adc-9f12-1be304f85a89': {
+  soymilk: {
     categories: ['seeds'],
     name: '두유',
     nutrition: {
@@ -36,7 +30,7 @@ const food = {
       protein: 3
     }
   },
-  '5140860a-eeb4-438d-83c0-8be304f52c77': {
+  apple: {
     categories: ['fruit'],
     name: '사과',
     nutrition: {
@@ -44,7 +38,7 @@ const food = {
       carbohydrate: 20
     }
   },
-  'fca7eb80-fe33-4cd9-95ea-27d0088fdf30': {
+  egg: {
     categories: ['meat'],
     name: '삶은 달걀',
     nutrition: {
@@ -55,7 +49,7 @@ const food = {
       size: 10
     }
   },
-  '327a4627-a6a7-4ebc-bcd1-6f5e3956f6d9': {
+  banana: {
     categories: ['fruit'],
     name: '바나나',
     nutrition: {
@@ -67,7 +61,7 @@ const food = {
 
 describe('영양소 계산', () => {
   test('삶은 달걀 2개', () => {
-    const { nutrition: sample } = food['fca7eb80-fe33-4cd9-95ea-27d0088fdf30']
+    const sample = food['egg']
     const received = calcNutrition(sample, 2)
     const expected = {
       calories: 151,
@@ -79,7 +73,7 @@ describe('영양소 계산', () => {
   })
 
   test('바나나 2개', () => {
-    const { nutrition: sample } = food['327a4627-a6a7-4ebc-bcd1-6f5e3956f6d9']
+    const sample = food['banana']
     const received = calcNutrition(sample, 2)
     const expected = { calories: 140, carbohydrate: 40 }
     expect(received).toEqual(expected)
@@ -104,22 +98,4 @@ test('영양소 합산', () => {
 test('영양소 총합', () => {
   const received = getTotalNutritionWith(food)(table)
   expect(received).toEqual(ExpectedNutrition)
-})
-
-test('블록 데이터', () => {
-  const sampleTime = '67b13718-fd01-49b3-9e84-8b83a92a2d57'
-  const timeData = table['9'][sampleTime]
-  const timeDataModified = {
-    ...timeData,
-    with: { ...timeData.with, ...table['10'] }
-  }
-
-  const received = getBlockWith(food)([sampleTime, timeDataModified])
-  const expected = {
-    name: ['그래놀라 100g', '두유 200ml', '사과 1개'],
-    categories: ['nuts', 'fruit', 'starch', 'seeds'],
-    nutrition: ExpectedNutrition
-  }
-
-  expect(received).toEqual(expected)
 })
